@@ -46,13 +46,12 @@ def classDict(dataFrame):
     classificationDict = {}
     for docType in dataFrame["Type"]:
         classificationDict[docType] = None
-    print(type(classificationDict))
     return classificationDict
 
 def process(dataTrained, doc, vocab, resultFrame, indexVal):
     infoDict = classDict(dataTrained)
     for docType in dataTrained["Type"]:
-        print(docType)
+        # print(docType)
         wordProbs = 1
         for word in doc.split():
             if word in vocab:
