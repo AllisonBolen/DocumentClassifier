@@ -26,7 +26,7 @@ def main():
         print(str(indexVal))
         thread = Thread(target = process, args = (dataTrained, doc, vocab, resultFrame, indexVal, ))
         jobList.append(thread)
-        break
+
 
     countS = 0
     for job in jobList:
