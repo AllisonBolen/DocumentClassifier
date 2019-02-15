@@ -7,7 +7,12 @@ def main():
     print("main")
     # load files
     # test
+    # test=  {"class":4}
     dataTrained = load_objects("./StemStopFiles/dataInfoStopStemmingEdit.pkl")
+    # print(dataTrained.head())
+    # print(dataTrained['Probablility'][dataTrained["Type"] == "atheism"].tolist()[0])
+    # test["docType"] = 1 * dataTrained['Probablility'][dataTrained["Type"] == "atheism"].tolist()[0]
+    # print(test)
     # Pretrained data
     resultFrame = load_objects("./StemStopFiles/resultSSFrame.pkl")
     # results
@@ -21,6 +26,7 @@ def main():
         print(str(indexVal))
         thread = Thread(target = process, args = (dataTrained, doc, vocab, ))
         jobList.append(thread)
+        break
 
     countS = 0
     for job in jobList:
@@ -43,7 +49,7 @@ def classDict():
     return classificationDict
 
 def process(dataTrained, doc, vocab):
-    classProb = classDict
+    infoDict = classDict
     for docType in dataTrained["Type"]:
         #print(docType)
         wordProbs = 1
@@ -51,8 +57,8 @@ def process(dataTrained, doc, vocab):
             if word in vocab:
                 #print("Word: "+word + ", Prob: " + str(dataTrained['wordCount'][dataTrained["Type"] == docType].tolist()[0][word]["probability"]))
                 wordProbs = wordProbs * dataTrained['wordCount'][dataTrained["Type"] == docType].tolist()[0][word]["probability"]
-        classProb[docType] = wordProbs * dataTrained['Probablility'][dataTrained["Type"] == docType].tolist()[0]
-    result = getMaxClass(classProb)
+        infoDict[docType] = wordProbs * dataTrained['Probablility'][dataTrained["Type"] == docType].tolist()[0]
+    result = getMaxClass(infoDict)
     # resultFrame["Predicted"].iloc[indexVal]
     resultFrame.at[indexVal, 'Predicted'] = result
 
