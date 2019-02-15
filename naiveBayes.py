@@ -20,7 +20,7 @@ def main():
         indexVal = testFrame[testFrame["Document"] == doc].index.values.astype(int)[0]
         print(str(indexVal))
         classProb = classDict
-        thread = Thread(target = process, args = (datatrained, doc, classProb, ))
+        thread = Thread(target = process, args = (dataTrained, doc, classProb, ))
         jobList.append(thread)
 
     countS = 0
