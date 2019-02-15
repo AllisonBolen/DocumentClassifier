@@ -2,7 +2,6 @@ import pandas as pd
 import pickle
 from threading import Thread
 import os
-from nltk.corpus import stopwords
 
 def main():
     print("main")
