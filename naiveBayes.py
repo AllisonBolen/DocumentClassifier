@@ -51,13 +51,13 @@ def classDict():
 def process(dataTrained, doc, vocab):
     infoDict = classDict
     for docType in dataTrained["Type"]:
-        #print(docType)
+        print(docType)
         wordProbs = 1
         for word in doc.split():
             if word in vocab:
                 #print("Word: "+word + ", Prob: " + str(dataTrained['wordCount'][dataTrained["Type"] == docType].tolist()[0][word]["probability"]))
                 wordProbs = wordProbs * dataTrained['wordCount'][dataTrained["Type"] == docType].tolist()[0][word]["probability"]
-        infoDict[docType] = wordProbs * dataTrained['Probablility'][dataTrained["Type"] == docType].tolist()[0]
+        # infoDict[docType] = wordProbs * dataTrained['Probablility'][dataTrained["Type"] == docType].tolist()[0]
     result = getMaxClass(infoDict)
     # resultFrame["Predicted"].iloc[indexVal]
     resultFrame.at[indexVal, 'Predicted'] = result
