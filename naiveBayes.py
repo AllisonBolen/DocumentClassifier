@@ -20,7 +20,7 @@ def main():
         indexVal = testFrame[testFrame["Document"] == doc].index.values.astype(int)[0]
         print(str(indexVal))
         classProb = classDict
-        thread = Thread(target = process, args = (dataTrained, doc, classProb, ))
+        thread = Thread(target = process, args = (dataTrained, doc, classProb, vocab, ))
         jobList.append(thread)
 
     countS = 0
@@ -43,7 +43,7 @@ def classDict():
         classificationDict[docType] = None
     return classificationDict
 
-def process(dataTrained, doc, classProb):
+def process(dataTrained, doc, classProb, vocab):
     for docType in dataTrained["Type"]:
         #print(docType)
         wordProbs = 1
