@@ -2,6 +2,7 @@ import pandas as pd
 import pickle
 from threading import Thread
 import os
+from nltk.corpus import stopwords
 
 def main():
     print("main")
@@ -9,16 +10,15 @@ def main():
     # test
     # test=  {"class":4}
     dataTrained = load_objects("./StemStopFiles/dataInfoStopStemmingEdit.pkl")
-    # print(dataTrained.head())
-    # print(dataTrained['Probablility'][dataTrained["Type"] == "atheism"].tolist()[0])
-    # test["docType"] = 1 * dataTrained['Probablility'][dataTrained["Type"] == "atheism"].tolist()[0]
-    # print(test)
-    # Pretrained data
-    resultFrame = load_objects("./StemStopFiles/resultSSFrame.pkl")
     # results
+    resultFrame = load_objects("./StemStopFiles/resultSSFrame.pkl")
+    # vocab
     vocab = load_objects("./StemStopFiles/vocabStopStemmingEdit.pkl")
     #load test file
-    testFrame = pd.read_csv("./test_data.csv" ,sep=",", names=("Type","Document"))
+    testFrame = pd.read_csv("./StemStopFiles/testSSData.csv" ,sep=",", names=("Type","Document"))
+
+
+
 
     jobList = []
     for doc in testFrame["Document"]:
