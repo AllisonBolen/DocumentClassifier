@@ -1,5 +1,5 @@
 Type,Predicted
-atheism,
+atheism,"{'class': 'atheism', 'max': -1.0420527015582372e+70, 'values': {'atheism': -1.0420527015582372e+70, 'baseball': -1.3318689546923544e+72, 'christianity': -3.007890151932996e+70, 'pc': -3.4896517009644725e+72, 'guns': -4.2619453035525115e+71, 'mideastpolitics': -2.0431724586148257e+71, 'mac': -3.8339442125446594e+72, 'electronics': -3.75750340942909e+72, 'forsale': -9.90046237696845e+72, 'autos': -1.90125109615739e+71, 'graphics': -4.9253536296268914e+72, 'religion': -1.0480480239771076e+71, 'xwindows': -3.633909500266472e+72, 'hockey': -2.857393146705569e+72, 'motorcycles': -2.4104746553045447e+72, 'mswindows': -5.1152490692546865e+72, 'cryptology': -2.4096094235326454e+72, 'space': -7.29479257878195e+71, 'politics': -2.5232682788544635e+71, 'medicine': -1.858271371989007e+72}}"
 atheism,
 atheism,
 atheism,

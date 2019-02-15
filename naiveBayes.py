@@ -24,7 +24,7 @@ def main():
     for doc in testFrame["Document"]:
         indexVal = testFrame[testFrame["Document"] == doc].index.values.astype(int)[0]
         print(str(indexVal))
-        thread = Thread(target = process, args = (dataTrained, doc, vocab, ))
+        thread = Thread(target = process, args = (dataTrained, doc, vocab, resultFrame, indexVal, ))
         jobList.append(thread)
         break
 
@@ -39,17 +39,18 @@ def main():
         print("Ended: " + str(countE))
         countE = countE + 1
         job.join()
-    save_it_all(resultFrame, "StemStopFiles/ResultFrameFinal.pkl")
-    resultFrame.to_csv("ResultFrameFinal.csv", index=False, sep=",", header=True)
+    save_it_all(resultFrame, "./StemStopFiles/ResultFrameFinal.pkl")
+    resultFrame.to_csv("./StemStopFiles/ResultFrameFinal.csv", index=False, sep=",", header=True)
 
-def classDict():
+def classDict(dataFrame):
     classificationDict = {}
-    for docType in dataTrained["Type"]:
+    for docType in dataFrame["Type"]:
         classificationDict[docType] = None
+    print(type(classificationDict))
     return classificationDict
 
-def process(dataTrained, doc, vocab):
-    infoDict = classDict
+def process(dataTrained, doc, vocab, resultFrame, indexVal):
+    infoDict = classDict(dataTrained)
     for docType in dataTrained["Type"]:
         print(docType)
         wordProbs = 1
@@ -57,7 +58,7 @@ def process(dataTrained, doc, vocab):
             if word in vocab:
                 #print("Word: "+word + ", Prob: " + str(dataTrained['wordCount'][dataTrained["Type"] == docType].tolist()[0][word]["probability"]))
                 wordProbs = wordProbs * dataTrained['wordCount'][dataTrained["Type"] == docType].tolist()[0][word]["probability"]
-        # infoDict[docType] = wordProbs * dataTrained['Probablility'][dataTrained["Type"] == docType].tolist()[0]
+        infoDict[docType] = wordProbs * dataTrained['Probablility'][dataTrained["Type"] == docType].tolist()[0]
     result = getMaxClass(infoDict)
     # resultFrame["Predicted"].iloc[indexVal]
     resultFrame.at[indexVal, 'Predicted'] = result
