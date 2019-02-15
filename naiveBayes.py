@@ -1,4 +1,7 @@
 import pandas as pd
+import pickle
+from threading import Thread
+import os
 
 def main():
     print("main")
@@ -6,36 +9,33 @@ def main():
     # test
     dataTrained = load_objects("./StemStopFiles/dataInfoStopStemmingEdit.pkl")
     # Pretrained data
-    resultFrame = load_objects("./StemStopFiles/resultSSFrame")
+    resultFrame = load_objects("./StemStopFiles/resultSSFrame.pkl")
     # results
     vocab = load_objects("./StemStopFiles/vocabStopStemmingEdit.pkl")
     #load test file
-    testFrame = pd.read_csv("./test_data.csv" ,sep=",", names=("Type","Document")
+    testFrame = pd.read_csv("./test_data.csv" ,sep=",", names=("Type","Document"))
 
-    jobs = []
+    jobList = []
     for doc in testFrame["Document"]:
         indexVal = testFrame[testFrame["Document"] == doc].index.values.astype(int)[0]
         print(str(indexVal))
-        # need to test the text against all the doc types
-        # need to find probability of each word in this text given a certain class
-        classProb = classDict()
-        thread = Thread(target = process, args = (dataTrained, doc, classProb, ))
-        jobs.append(thread)
+        classProb = classDict
+        thread = Thread(target = process, args = (datatrained, doc, classProb, ))
+        jobList.append(thread)
 
-    # start the model threads
     countS = 0
-    for job in jobs:
+    for job in jobList:
         print("Started: " + str(countS))
         countS = countS + 1
         job.start()
-    # wait for all threads to finish
+
     countE = 0
-    for job in jobs:
+    for job in jobList:
         print("Ended: " + str(countE))
         countE = countE + 1
         job.join()
-    save_it_all(resultFrame, "./StemStopFiles/ResultFrameFinal.pkl")
-    resultFrame.to_csv("ResultFrameFinal.csv", index=False, sep=",", header=True))
+    save_it_all(resultFrame, "StemStopFiles/ResultFrameFinal.pkl")
+    resultFrame.to_csv("ResultFrameFinal.csv", index=False, sep=",", header=True)
 
 def classDict():
     classificationDict = {}
@@ -96,8 +96,5 @@ def getMaxClass(dictionary):
             result["max"] = value
             result["values"] = dictionary
     return result
-
-
-
 
 if __name__ == "__main__": main()
