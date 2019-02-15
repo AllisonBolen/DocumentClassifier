@@ -10,7 +10,7 @@ def main():
     # results
     vocab = load_objects("./StemStopFiles/vocabStopStemmingEdit.pkl")
     #load test file
-    testFrame = pd.read_csv("./test_data.csv" ,sep=",", names=("Type","Document"))
+    testFrame = pd.read_csv("./test_data.csv" ,sep=",", names=("Type","Document")
 
     jobs = []
     for doc in testFrame["Document"]:
