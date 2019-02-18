@@ -1,2 +1,7 @@
 **/.DS_Store
+<<<<<<< HEAD
+**.csv
+**/RawDataTestClassify-checkpoint.ipynb
+=======
+>>>>>>> 811574e1f6e3a7bca7e9d4ebc2023ac7231c76df
 **/checkpoint.ipynb
