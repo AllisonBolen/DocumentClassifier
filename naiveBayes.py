@@ -28,7 +28,7 @@ def main():
 
         thread = Thread(target = process, args = (trainedFrame, resultFrame, row, index, classProb, vocabulary, ))
         jobs.append(thread)
-        
+
     # start the model threads
     countS = 0
     for job in jobs:
@@ -86,13 +86,13 @@ def classDict(df):
 def process(trainedFrame, resultFrame, row, index, classProb, vocab):
     for docType in trainedFrame["Type"]:
         #print(docType)
-        wordProbs = 1
+        wordProbs = 0
         for word in row["Document"].split():
             if word in vocab:
                 i = 0
                 #print("Word: "+word + ", Prob: " + str(dataTrained['wordCount'][dataTrained["Type"] == docType].tolist()[0][word]["probability"]))
-                wordProbs = wordProbs * trainedFrame['WordCount'][trainedFrame["Type"] == docType].tolist()[0][word]["probability"]
-        classProb[docType] = wordProbs * trainedFrame['ClassProbability'][trainedFrame["Type"] == docType].tolist()[0]
+                wordProbs = math.log(wordProbs) + math.log(trainedFrame['WordCount'][trainedFrame["Type"] == docType].tolist()[0][word]["probability"])
+        classProb[docType] = math.log(wordProbs) + math.log(trainedFrame['ClassProbability'][trainedFrame["Type"] == docType].tolist()[0])
     result = getMaxClass(classProb)
     # # resultFrame["Predicted"].iloc[index]
     print(result)
