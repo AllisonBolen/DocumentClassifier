@@ -1,48 +1,31 @@
+"""
+Allison Bolen
+CIS 678
+WIN19
+"""
 import pandas as pd
-import pickle
+import pickle, os, math
 from threading import Thread
-import os
+from nltk.corpus import stopwords
+cachedStopWords = stopwords.words("english")
 
 def main():
     print("main")
     # load files
 
     ## trained data info data set for use:
-    trainedFrame = load_objects("./RawFiles/raw_data_info_frame.pkl")
-
-    ## vocabulary training set for use:
-    vocabulary = load_objects("./RawFiles/raw_vocabulary.pkl")
+    # load raw data dict and vocab and raw frame
+    raw_dict = load_objects("./RawFiles/rawBigDict.pkl")
+    raw_trained_frame = load_objects("./RawFiles/raw_data_info_frame.pkl")
+    raw_vocab = load_objects("./RawFiles/raw_vocabulary.pkl")
 
     # test data
     testFrame = pd.read_csv("./RawFiles/raw_test_data.csv", sep=",")
 
-    resultFrame = pd.read_csv("./RawFiles/raw_result_frame.csv", sep=",")
+    right, total = process(raw_trained_frame, testFrame, raw_dict, raw_vocab)
 
-    # start predicting:
-    testFrame["Predicted"] = None
-    jobs = []
-    for index, row in testFrame.iterrows():
-        unique_id = index
-        print(unique_id)
-        classProb = classDict(trainedFrame)
-
-        thread = Thread(target = process, args = (trainedFrame, resultFrame, row, index, classProb, vocabulary, ))
-        jobs.append(thread)
-
-    # start the model threads
-    countS = 0
-    for job in jobs:
-        print("Started: " + str(countS))
-        countS = countS + 1
-        job.start()
-    # wait for all threads to finish
-    countE = 0
-    for job in jobs:
-        print("Ended:  " + str(countE))
-        countE = countE + 1
-        job.join()
-
-    saveFrame(testFrame.copy(), "./RawFiles/ResultFrameFinal")
+    print("THE FINAL RESULT IS:")
+    print(str(right/total) + "% predicated correctly!!")
 
 def save_it_all(obj, filename):
     os.makedirs(os.path.dirname(filename), exist_ok=True)
@@ -53,51 +36,53 @@ def load_objects(file):
     with open(file, 'rb') as input:
         return pickle.load(input)
 
-def vocabDict(vocab, doc, n): # handles empty word sets
-    nk = 0
-    # n = the number of word postions for this document type
-    probability = math.log(nk + 1) - math.log(n + len(vocab))
-
-    newDict = {"count": 0, "probability":probability}
-    vdict = dict((el,newDict) for el in vocab)
-    return vdict
-
 def saveFrame(df, name):
     df.to_csv(name+".csv", index=False, sep=",", header=True)
     save_it_all(df, name+".pkl")
 
-def getMaxClass(dictionary):
-    result = {"class": None, "max": None, "values": None}
-    maxVal = max(dictionary.values())
-    for key, value in dictionary.items():
-        if maxVal == value:
-            result["class"] = key
-            result["max"] = value
-            result["values"] = dictionary
-    return result
+def dictHelper(df):
+    types = df["Type"]
+    res = {}
+    for ty in types:
+        res[ty] = 0
+    return res
 
-# niave bayes caclulation
-def classDict(df):
-    classificationDict = {}
-    for docType in df["Type"]:
-        classificationDict[docType] = None
-    return classificationDict
+def process(trained_frame, testFrame, chosenDict, vocab):
+    # Classify this shit:
+    rawResult = dictHelper(trained_frame)
+    # Classify this shit:
+    i = 0
+    q = 0
+    for index, row in testFrame.iterrows():
+        print(i)
+        i = i + 1
+        classification = {}
+        for docType in trained_frame["Type"]:
+            probabilities = []
+            doc = row["Document"]
+            for word in doc.split():
+                if word+"-"+docType in chosenDict:
+                    probabilities.append(math.log(chosenDict[word+"-"+docType]))
+                else: # if this is a word we havent seen before ever what are th chances it could be in the document
+                    probabilities.append(math.log(1/(trained_frame["WordPositions"][trained_frame["Type"]==docType]+len(vocab))))
+            classification[docType] = math.log(trained_frame["ClassProbability"][trained_frame["Type"]==docType]) + sum(probabilities)
 
-def process(trainedFrame, resultFrame, row, index, classProb, vocab):
-    for docType in trainedFrame["Type"]:
-        #print(docType)
-        wordProbs = 0
-        for word in row["Document"].split():
-            if word in vocab:
-                i = 0
-                #print("Word: "+word + ", Prob: " + str(dataTrained['wordCount'][dataTrained["Type"] == docType].tolist()[0][word]["probability"]))
-                wordProbs = math.log(wordProbs) + math.log(trainedFrame['WordCount'][trainedFrame["Type"] == docType].tolist()[0][word]["probability"])
-        classProb[docType] = math.log(wordProbs) + math.log(trainedFrame['ClassProbability'][trainedFrame["Type"] == docType].tolist()[0])
-    result = getMaxClass(classProb)
-    # # resultFrame["Predicted"].iloc[index]
-    print(result)
+        # find the max class
+        maxClass = None
+        for key, value in classification.items():
+            if value == max(classification.values()):
+                maxClass = key
 
-    row['Predicted'] = result
+        # does it match the actual class
+        if maxClass == row["Type"]:
+            print("Success! predicted: " + maxClass + " real: " + row["Type"])
+            rawResult[row["Type"]] = rawResult[row["Type"]] + 1
+            q = q + 1
+
+    # find correct percentage for each category
+    for key, value in rawResult.items():
+        print(key + ": " + str((value/sizes[key])*100))
+    return q, i
 
 
 if __name__ == "__main__": main()
