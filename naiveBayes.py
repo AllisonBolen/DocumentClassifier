@@ -1,3 +1,8 @@
+"""
+Allison Bolen
+CIS 678
+WIN19
+"""
 import pandas as pd
 import pickle, os, math
 from threading import Thread
@@ -58,21 +63,23 @@ def process(trained_frame, testFrame, chosenDict, vocab):
             for word in doc.split():
                 if word+"-"+docType in chosenDict:
                     probabilities.append(math.log(chosenDict[word+"-"+docType]))
-                else:
+                else: # if this is a word we havent seen before ever what are th chances it could be in the document
                     probabilities.append(math.log(1/(trained_frame["WordPositions"][trained_frame["Type"]==docType]+len(vocab))))
             classification[docType] = math.log(trained_frame["ClassProbability"][trained_frame["Type"]==docType]) + sum(probabilities)
 
+        # find the max class
         maxClass = None
         for key, value in classification.items():
             if value == max(classification.values()):
                 maxClass = key
 
+        # does it match the actual class
         if maxClass == row["Type"]:
-            print("Success! predicted: "+ maxClass + " real: "+row["Type"])
+            print("Success! predicted: " + maxClass + " real: " + row["Type"])
             rawResult[row["Type"]] = rawResult[row["Type"]] + 1
             q = q + 1
 
-
+    # find correct percentage for each category
     for key, value in rawResult.items():
         print(key + ": " + str((value/sizes[key])*100))
     return q, i
